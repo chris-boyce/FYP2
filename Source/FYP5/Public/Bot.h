@@ -35,11 +35,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int Deaths;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int IsDead;
+
 	UFUNCTION(BlueprintImplementableEvent , Category="Team")
 	void SetBlueTeam();
 
 	UFUNCTION(BlueprintImplementableEvent , Category="Team")
 	void SetRedTeam();
+
+	UFUNCTION(BlueprintImplementableEvent , Category="Rounds")
+	void RespawnBot();
+	
 	
 	
 };

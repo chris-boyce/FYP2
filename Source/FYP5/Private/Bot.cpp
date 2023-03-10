@@ -42,6 +42,8 @@ void ABot::KilledEnemy()
 
 void ABot::Died()
 {
+	IsDead = true;
 	Deaths = Deaths + 1;
 }
+
 

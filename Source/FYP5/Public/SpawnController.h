@@ -24,7 +24,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION(BlueprintCallable , Category="SpawnAI")
+	UFUNCTION(BlueprintCallable , Category="Spawn System")
 	void SpawnAI();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -42,7 +42,33 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<AActor*> SpawnPointRed;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<ABot*> BotListBlue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<ABot*> BotListRed;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Spawn System")
 	ABot* CurrentAI;
+
+	bool BlueTeamWinRound;
+	bool RedTeamWinRound;
+
+	int DeadCountBlue;
+	int DeadCountRed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Scoring")
+	FVector2D Score;
+
+	FVector OffSet;
+
+	UFUNCTION(BlueprintCallable , Category="Rounds")
+	void CheckEnemysLeft(bool isBlue);
+
+	UFUNCTION(BlueprintCallable , Category="Rounds")
+	void ResetRound();
+
+	
+	
 
 };
