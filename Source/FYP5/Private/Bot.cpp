@@ -8,6 +8,7 @@ ABot::ABot()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	
 
 }
 
@@ -15,6 +16,8 @@ ABot::ABot()
 void ABot::BeginPlay()
 {
 	Super::BeginPlay();
+	Kills = 0;
+	Deaths = 0;
 	
 }
 
@@ -30,5 +33,15 @@ void ABot::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void ABot::KilledEnemy()
+{
+	Kills = Kills + 1;
+}
+
+void ABot::Died()
+{
+	Deaths = Deaths + 1;
 }
 

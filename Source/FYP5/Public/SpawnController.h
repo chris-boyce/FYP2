@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Bot.h"
 #include "GameFramework/Actor.h"
 #include "SpawnController.generated.h"
 
@@ -22,5 +23,26 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintCallable , Category="SpawnAI")
+	void SpawnAI();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int TeamSize;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int RoundNumber;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Spawn System")
+	TSubclassOf<AActor>AIToSpawn;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<AActor*> SpawnPointBlue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<AActor*> SpawnPointRed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Spawn System")
+	ABot* CurrentAI;
 
 };

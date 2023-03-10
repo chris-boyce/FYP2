@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/Character.h"
 #include "Bot.generated.h"
 
@@ -12,18 +13,33 @@ class FYP5_API ABot : public ACharacter
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	ABot();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
+	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintCallable , Category="Scoring")
+	void KilledEnemy();
+
+	UFUNCTION(BlueprintCallable , Category="Scoring")
+	void Died();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int Kills;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int Deaths;
+
+	UFUNCTION(BlueprintImplementableEvent , Category="Team")
+	void SetBlueTeam();
+
+	UFUNCTION(BlueprintImplementableEvent , Category="Team")
+	void SetRedTeam();
+	
+	
 };
