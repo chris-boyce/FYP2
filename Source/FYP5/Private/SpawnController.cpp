@@ -73,7 +73,7 @@ void ASpawnController::CheckEnemysLeft(bool isBlue)
 	if(isBlue == true)
 	{
 		DeadCountBlue = DeadCountBlue + 1;
-		if(DeadCountBlue >= TeamSize)
+		if(DeadCountBlue == TeamSize)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Red Team win"));
 			RedTeamWinRound = true;
@@ -84,7 +84,7 @@ void ASpawnController::CheckEnemysLeft(bool isBlue)
 	else
 	{
 		DeadCountRed = DeadCountRed + 1;
-		if(DeadCountRed >= TeamSize)
+		if(DeadCountRed == TeamSize)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Blue Team win"));
 			BlueTeamWinRound = true;
@@ -96,6 +96,7 @@ void ASpawnController::CheckEnemysLeft(bool isBlue)
 
 void ASpawnController::ResetRound()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Round Reset"));
 	DeadCountBlue = 0;
 	DeadCountRed = 0;
 	RedTeamWinRound = false;
@@ -105,14 +106,15 @@ void ASpawnController::ResetRound()
 	for ( int i = 0; i < TeamSize; i++ )
 	{
 		OffSet.X = i * 200;
-		BotListRed[i]->TeleportTo(SpawnPointRed[0]->GetActorLocation() + OffSet , SpawnPointRed[0]->GetActorRotation());
+		BotListBlue[i]->RespawnBlueBot(SpawnPointBlue[0]->GetActorLocation()+ OffSet);
 	}
-
-	for ( int i = 0; i < TeamSize; i++ )
+	for ( int j = 0; j < TeamSize; j++ )
 	{
-		OffSet.X = i * 200;
-		BotListBlue[i]->TeleportTo(SpawnPointBlue[0]->GetActorLocation() + OffSet , SpawnPointBlue[0]->GetActorRotation());
+		OffSet.X = j * 200;
+		BotListRed[j]->RespawnRedBot(SpawnPointRed[0]->GetActorLocation() + OffSet);
 	}
+	
+	
 	
 }
 	

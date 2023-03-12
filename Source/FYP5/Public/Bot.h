@@ -45,7 +45,10 @@ public:
 	void SetRedTeam();
 
 	UFUNCTION(BlueprintImplementableEvent , Category="Rounds")
-	void RespawnBot();
+	void RespawnBlueBot(FVector SpawnPos);
+
+	UFUNCTION(BlueprintImplementableEvent , Category="Rounds")
+	void RespawnRedBot(FVector SpawnPos);
 	
 	
 	
