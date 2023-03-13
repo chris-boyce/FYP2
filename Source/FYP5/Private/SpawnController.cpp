@@ -3,19 +3,16 @@
 
 #include "SpawnController.h"
 
-#include <xkeycheck.h>
 
 #include "BlueSpawns.h"
 #include "RedSpawns.h"
 #include "Bot.h"
 #include "Kismet/GameplayStatics.h"
 #include "Math/Vector.h"
-#include "NativeGameplayTags.h"
 
-// Sets default values
 ASpawnController::ASpawnController()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+ 	//Primary Setup on Controller
 	PrimaryActorTick.bCanEverTick = true;
 	TeamSize = 5;
 	BotListBlue.SetNum(TeamSize);
@@ -23,15 +20,14 @@ ASpawnController::ASpawnController()
 
 }
 
-// Called when the game starts or when spawned
 void ASpawnController::BeginPlay()
 {
 	Super::BeginPlay();
 	RoundNumber = 0;
 	SpawnAI();
+
 }
 
-// Called every frame
 void ASpawnController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -39,6 +35,7 @@ void ASpawnController::Tick(float DeltaTime)
 }
 void ASpawnController::SpawnAI()
 {
+	//Spawns Bots and Keeps them in List of Each Team
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABlueSpawns::StaticClass(), SpawnPointBlue);
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARedSpawns::StaticClass(), SpawnPointRed);
 
@@ -69,14 +66,13 @@ void ASpawnController::SpawnAI()
 
 void ASpawnController::CheckEnemysLeft(bool isBlue)
 {
-	UE_LOG(LogTemp, Warning, TEXT("has Run"));
+	
+	//Check run after Death to see if round is over
 	if(isBlue == true)
 	{
 		DeadCountBlue = DeadCountBlue + 1;
 		if(DeadCountBlue == TeamSize)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Red Team win"));
-			RedTeamWinRound = true;
 			Score.X = Score.X + 1;
 			ResetRound();
 		}
@@ -86,8 +82,6 @@ void ASpawnController::CheckEnemysLeft(bool isBlue)
 		DeadCountRed = DeadCountRed + 1;
 		if(DeadCountRed == TeamSize)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Blue Team win"));
-			BlueTeamWinRound = true;
 			Score.Y = Score.Y + 1;
 			ResetRound();
 		}
@@ -96,26 +90,50 @@ void ASpawnController::CheckEnemysLeft(bool isBlue)
 
 void ASpawnController::ResetRound()
 {
+	//Reset Of Round Stats
 	UE_LOG(LogTemp, Warning, TEXT("Round Reset"));
 	DeadCountBlue = 0;
 	DeadCountRed = 0;
-	RedTeamWinRound = false;
-	BlueTeamWinRound = false;
 	RoundNumber = RoundNumber + 1;
-	
-	for ( int i = 0; i < TeamSize; i++ )
+	if(RoundNumber == 6)
 	{
-		OffSet.X = i * 200;
-		BotListBlue[i]->RespawnBlueBot(SpawnPointBlue[0]->GetActorLocation()+ OffSet);
+		
+		SpawnPointBlue[0]->SetActorLocation(FVector(1330,-890,50));
+		SpawnPointRed[0]->SetActorLocation(FVector(1500,3180,50));
 	}
-	for ( int j = 0; j < TeamSize; j++ )
+	if(Score.X == 7)
 	{
-		OffSet.X = j * 200;
-		BotListRed[j]->RespawnRedBot(SpawnPointRed[0]->GetActorLocation() + OffSet);
+		BlueTeamWin = true;
 	}
-	
-	
-	
+	if(Score.Y == 7)
+	{
+		RedTeamWin = true;
+	}
+	if(RedTeamWin == true || BlueTeamWin == true)
+	{
+		EndGame();
+	}
+	else
+	{
+		//Respawn the bot after all 5 die
+		for ( int i = 0; i < TeamSize; i++ )
+		{
+			OffSet.X = i * 200;
+			BotListBlue[i]->RespawnBlueBot(SpawnPointBlue[0]->GetActorLocation()+ OffSet);
+		}
+		for ( int j = 0; j < TeamSize; j++ )
+		{
+			OffSet.X = j * 200;
+			BotListRed[j]->RespawnRedBot(SpawnPointRed[0]->GetActorLocation() + OffSet);
+		}
+	}
+
+}
+
+void ASpawnController::EndGame()
+{
+	OnRoundEnd.Broadcast();
+	UE_LOG(LogTemp, Warning, TEXT("SpawnerCalled End Game"));
 }
 	
 

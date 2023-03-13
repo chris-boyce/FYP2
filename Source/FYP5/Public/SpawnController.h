@@ -7,21 +7,19 @@
 #include "GameFramework/Actor.h"
 #include "SpawnController.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRoundEnd);
 UCLASS()
 class FYP5_API ASpawnController : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	ASpawnController();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable , Category="Spawn System")
@@ -47,15 +45,14 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<ABot*> BotListRed;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Spawn System")
-	ABot* CurrentAI;
-
-	bool BlueTeamWinRound;
-	bool RedTeamWinRound;
+	
+	bool BlueTeamWin;
+	bool RedTeamWin;
 
 	int DeadCountBlue;
 	int DeadCountRed;
+
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Scoring")
 	FVector2D Score;
@@ -67,8 +64,11 @@ public:
 
 	UFUNCTION(BlueprintCallable , Category="Rounds")
 	void ResetRound();
-
 	
+	UPROPERTY(BlueprintAssignable, Category = "EventCaller")
+	FOnRoundEnd OnRoundEnd;
 	
+	UFUNCTION(BlueprintCallable , Category="Rounds")
+	void EndGame();
 
 };
