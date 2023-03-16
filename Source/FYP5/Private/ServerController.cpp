@@ -3,7 +3,6 @@
 
 #include "ServerController.h"
 
-#include "AssetImportTask.h"
 #include "SpawnController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Microsoft/AllowMicrosoftPlatformTypes.h"
