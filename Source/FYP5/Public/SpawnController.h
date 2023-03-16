@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "Bot.h"
 #include "GameFramework/Actor.h"
+#include "ServerController.h"
 #include "SpawnController.generated.h"
+
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRoundEnd);
 UCLASS()
@@ -19,7 +21,16 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-public:	
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TMap<int, FBotData> RedMatchBots;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TMap<int, FBotData> BlueMatchBots;
+
+	
+	
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable , Category="Spawn System")

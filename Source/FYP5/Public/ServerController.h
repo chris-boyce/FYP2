@@ -15,17 +15,10 @@ struct FBotData : public FTableRowBase
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int IDNum;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float ReactionTime;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float ShotAccuracy;
-
-	FBotData() : IDNum(0) , ReactionTime(0) , ShotAccuracy(0)
-	{
-	}
-	
 };
 USTRUCT(BlueprintType)
 struct FBotSeverData : public FTableRowBase
@@ -34,13 +27,10 @@ struct FBotSeverData : public FTableRowBase
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int IDNum;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool InGame;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int GamesPlayed;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float SkillRating;
 };
@@ -53,18 +43,33 @@ class FYP5_API AServerController : public AActor
 	
 public:	
 	AServerController();
+	virtual void Tick(float DeltaTime) override;
+
+	FBotData LocalBotData;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ASpawnController* SpawnController;
 
-	virtual void Tick(float DeltaTime) override;
+	UFUNCTION(BlueprintCallable , Category="Event Reciever")
+	void CreateMatch();
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TArray<int> RedLobbyBot;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TArray<int> BlueLobbyBot;
+
+	//Called By the SpawnController
 	UFUNCTION(BlueprintCallable , Category="Event Reciever")
 	void EndGame();
-	
+
+	//Live Maps Controlling the Data
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TMap<int, FBotData> BotStatsMap;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TMap<int, FBotSeverData> BotServerStatus;
+	
 	//BOT STUFF
 	//Writes Array from Data Table
 	UFUNCTION(BlueprintImplementableEvent , Category="FileWriting")
@@ -92,6 +97,9 @@ public:
 	//Runs at end to put all the values from data map to array to the CSV for reimport
 	UFUNCTION(BlueprintImplementableEvent , Category="FileWriting")
 	void RefreshArray();
+
+	
+	
 protected:
 	virtual void BeginPlay() override;
 	

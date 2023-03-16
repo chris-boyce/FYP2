@@ -41,23 +41,29 @@ void ASpawnController::SpawnAI()
 
 	for ( int i = 0; i < TeamSize; i++ )
 	{
-		OffSet.X = i * 200;
+		OffSet.X = i * 500;
 		
 		BotListBlue[i] = GetWorld()->SpawnActor<ABot>(AIToSpawn, SpawnPointBlue[0]->GetActorLocation() + OffSet , SpawnPointBlue[0]->GetActorRotation());
 		if(BotListBlue[i] != nullptr)
 		{
 			BotListBlue[i]->SetBlueTeam();
+			BotListBlue[i]->Accuracy = BlueMatchBots[i].ShotAccuracy;
+			BotListBlue[i]->ReverseAccuracy = -BlueMatchBots[i].ShotAccuracy;
+			BotListBlue[i]->ReactionTime = BlueMatchBots[i].ReactionTime;
 		}
 	}
 
 	
 	for ( int i = 0; i < TeamSize; i++ )
 	{
-		OffSet.X = i * 200;
-		BotListRed[i] = GetWorld()->SpawnActor<ABot>(AIToSpawn, SpawnPointRed[0]->GetActorLocation() , SpawnPointRed[0]->GetActorRotation());
+		OffSet.X = i * 500;
+		BotListRed[i] = GetWorld()->SpawnActor<ABot>(AIToSpawn, SpawnPointRed[0]->GetActorLocation() + OffSet , SpawnPointRed[0]->GetActorRotation());
 		if(BotListRed[i] != nullptr)
 		{
 			BotListRed[i]->SetRedTeam();
+			BotListRed[i]->Accuracy = RedMatchBots[i].ShotAccuracy;
+			BotListRed[i]->ReverseAccuracy = -RedMatchBots[i].ShotAccuracy;
+			BotListRed[i]->ReactionTime = RedMatchBots[i].ReactionTime;
 		}
 	}
 	
@@ -97,9 +103,9 @@ void ASpawnController::ResetRound()
 	RoundNumber = RoundNumber + 1;
 	if(RoundNumber == 6)
 	{
-		
-		SpawnPointBlue[0]->SetActorLocation(FVector(1330,-890,50));
-		SpawnPointRed[0]->SetActorLocation(FVector(1500,3180,50));
+		FVector temp = SpawnPointBlue[0]->GetActorLocation();
+		SpawnPointBlue[0]->SetActorLocation(SpawnPointRed[0]->GetActorLocation());
+		SpawnPointRed[0]->SetActorLocation(temp);
 	}
 	if(Score.X == 7)
 	{
@@ -118,12 +124,12 @@ void ASpawnController::ResetRound()
 		//Respawn the bot after all 5 die
 		for ( int i = 0; i < TeamSize; i++ )
 		{
-			OffSet.X = i * 200;
+			OffSet.X = i * 500;
 			BotListBlue[i]->RespawnBlueBot(SpawnPointBlue[0]->GetActorLocation()+ OffSet);
 		}
 		for ( int j = 0; j < TeamSize; j++ )
 		{
-			OffSet.X = j * 200;
+			OffSet.X = j * 500;
 			BotListRed[j]->RespawnRedBot(SpawnPointRed[0]->GetActorLocation() + OffSet);
 		}
 	}

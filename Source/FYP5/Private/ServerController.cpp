@@ -4,10 +4,6 @@
 #include "ServerController.h"
 
 #include "AssetImportTask.h"
-#include "Hal/PlatformFileManager.h"
-#include "Misc/FileHelper.h"
-#include "Factories/ReimportDataTableFactory.h"
-#include "EditorReimportHandler.h"
 #include "SpawnController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Microsoft/AllowMicrosoftPlatformTypes.h"
@@ -27,12 +23,29 @@ void AServerController::BeginPlay()
 	BotStatsWriteArrayToMap();
 	ServerWriteDataTableToArray();
 	ServerWriteArrayToMap();
+
+	CreateMatch();
 }
 
 void AServerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AServerController::CreateMatch()
+{
+	for(int i = 0; i < RedLobbyBot.Num(); i++)
+	{
+		LocalBotData = BotStatsMap[RedLobbyBot[i]];
+		SpawnController->RedMatchBots.Add(i, LocalBotData );
+	}
+
+	for(int i = 0; i < BlueLobbyBot.Num(); i++)
+	{
+		LocalBotData = BotStatsMap[BlueLobbyBot[i]];
+		SpawnController->BlueMatchBots.Add(i, LocalBotData );
+	}
 }
 
 void AServerController::EndGame()

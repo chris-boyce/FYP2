@@ -20,12 +20,10 @@ protected:
 
 public:	
 	virtual void Tick(float DeltaTime) override;
-	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	
 	UFUNCTION(BlueprintCallable , Category="Scoring")
 	void KilledEnemy();
-
 	UFUNCTION(BlueprintCallable , Category="Scoring")
 	void Died();
 	
@@ -49,6 +47,16 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent , Category="Rounds")
 	void RespawnRedBot(FVector SpawnPos);
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float ReactionTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Accuracy;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float ReverseAccuracy;
+
 	
 	
 	
