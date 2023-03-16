@@ -6,8 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Engine/DataTable.h"
 #include "ServerController.generated.h"
-
-
+//I Know this is basically Stupid
 USTRUCT(BlueprintType)
 struct FBotData : public FTableRowBase
 {
@@ -34,6 +33,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float SkillRating;
 };
+USTRUCT(BlueprintType)
+struct FServerStatus
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AActor* SpawnController;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool IsActive;
+	
+};
+//End of Stupid
 
 class ASpawnController;
 UCLASS()
@@ -45,32 +56,36 @@ public:
 	AServerController();
 	virtual void Tick(float DeltaTime) override;
 
+	//Temp Variables To Pass Data Around Inside This Script
 	FBotData LocalBotData;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<AActor*> ActorSpawnController;
 	ASpawnController* SpawnController;
-
+	
+	//Starts the match Needs Server ID
 	UFUNCTION(BlueprintCallable , Category="Event Reciever")
-	void CreateMatch();
-
+	void CreateMatch(int ServerToConnect);
+	
+	//Lobby Set Up Take Bot Id Nums
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TArray<int> RedLobbyBot;
-
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TArray<int> BlueLobbyBot;
 
-	//Called By the SpawnController
+	//Called By the SpawnController - when ended
 	UFUNCTION(BlueprintCallable , Category="Event Reciever")
 	void EndGame();
-
-	//Live Maps Controlling the Data
+	
+	//Server Map (Spawn Controller, If Server is Active)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TMap<int, FServerStatus> ServerStatus;
+	//Live Map Controlling the bot Data (Bot ID, Reaction Time, Accuracy)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TMap<int, FBotData> BotStatsMap;
-
+	//Live Map of Bot data (Bot ID, Ingame Status, Games Player, Skill Rating)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TMap<int, FBotSeverData> BotServerStatus;
 	
-	//BOT STUFF
+	//BOT STUFF -- Blueprint
 	//Writes Array from Data Table
 	UFUNCTION(BlueprintImplementableEvent , Category="FileWriting")
 	void BotStatsWriteDataTableToArray();
@@ -81,7 +96,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent , Category="FileWriting")
 	void BotStatsEditDataInMapAndArray(int IDNum, float ReactionTime, float Accuracy);
 
-	//SERVER STUFF
+	//SERVER STUFF -- Blueprint
 	//Start of Game Loads into a array to be used later to write to
 	UFUNCTION(BlueprintImplementableEvent , Category="FileWriting")
 	void ServerWriteDataTableToArray();
@@ -98,8 +113,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent , Category="FileWriting")
 	void RefreshArray();
 
-	
-	
+
 protected:
 	virtual void BeginPlay() override;
 	

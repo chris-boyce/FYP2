@@ -3,10 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayTagContainer.h"
 #include "GameFramework/Character.h"
 #include "Bot.generated.h"
 
+class ASpawnController;
 UCLASS()
 class FYP5_API ABot : public ACharacter
 {
@@ -47,6 +47,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent , Category="Rounds")
 	void RespawnRedBot(FVector SpawnPos);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ASpawnController* ReportToController;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float ReactionTime;

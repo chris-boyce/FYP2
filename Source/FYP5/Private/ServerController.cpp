@@ -16,25 +16,39 @@ AServerController::AServerController()
 void AServerController::BeginPlay()
 {
 	Super::BeginPlay();
-	AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), ASpawnController::StaticClass());
-	SpawnController = Cast<ASpawnController>(temp);
-	SpawnController->OnRoundEnd.AddDynamic(this, &AServerController::EndGame);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnController::StaticClass(), ActorSpawnController);
+	for(int i = 0; i < ActorSpawnController.Num(); i++)
+	{
+		FServerStatus temps;
+		temps.SpawnController = ActorSpawnController[i];
+		temps.IsActive = false;
+		ServerStatus.Add(i, temps);
+	}
+	
 	BotStatsWriteDataTableToArray();
 	BotStatsWriteArrayToMap();
 	ServerWriteDataTableToArray();
 	ServerWriteArrayToMap();
 
-	CreateMatch();
+	
+
+	CreateMatch(0);
+	CreateMatch(1);
 }
 
 void AServerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
-void AServerController::CreateMatch()
+void AServerController::CreateMatch(int ServerToConnect)
 {
+	//*TODO --- Set up RedLobbyBots and BlueLobbyBots --- Add Server Picking --- *//   
+	SpawnController = nullptr;
+	SpawnController = Cast<ASpawnController>(ServerStatus[ServerToConnect].SpawnController);
+	ServerStatus[ServerToConnect].IsActive = true;
+	SpawnController->OnRoundEnd.AddDynamic(this, &AServerController::EndGame);
+	
 	for(int i = 0; i < RedLobbyBot.Num(); i++)
 	{
 		LocalBotData = BotStatsMap[RedLobbyBot[i]];
@@ -46,6 +60,7 @@ void AServerController::CreateMatch()
 		LocalBotData = BotStatsMap[BlueLobbyBot[i]];
 		SpawnController->BlueMatchBots.Add(i, LocalBotData );
 	}
+	SpawnController->SpawnAI();
 }
 
 void AServerController::EndGame()

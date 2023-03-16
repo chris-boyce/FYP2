@@ -2,12 +2,7 @@
 
 
 #include "SpawnController.h"
-
-
-#include "BlueSpawns.h"
-#include "RedSpawns.h"
 #include "Bot.h"
-#include "Kismet/GameplayStatics.h"
 #include "Math/Vector.h"
 
 ASpawnController::ASpawnController()
@@ -24,8 +19,6 @@ void ASpawnController::BeginPlay()
 {
 	Super::BeginPlay();
 	RoundNumber = 0;
-	SpawnAI();
-
 }
 
 void ASpawnController::Tick(float DeltaTime)
@@ -36,20 +29,19 @@ void ASpawnController::Tick(float DeltaTime)
 void ASpawnController::SpawnAI()
 {
 	//Spawns Bots and Keeps them in List of Each Team
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABlueSpawns::StaticClass(), SpawnPointBlue);
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARedSpawns::StaticClass(), SpawnPointRed);
 
 	for ( int i = 0; i < TeamSize; i++ )
 	{
 		OffSet.X = i * 500;
 		
-		BotListBlue[i] = GetWorld()->SpawnActor<ABot>(AIToSpawn, SpawnPointBlue[0]->GetActorLocation() + OffSet , SpawnPointBlue[0]->GetActorRotation());
+		BotListBlue[i] = GetWorld()->SpawnActor<ABot>(AIToSpawn, SpawnPointBlue->GetActorLocation() + OffSet , SpawnPointBlue->GetActorRotation());
 		if(BotListBlue[i] != nullptr)
 		{
 			BotListBlue[i]->SetBlueTeam();
 			BotListBlue[i]->Accuracy = BlueMatchBots[i].ShotAccuracy;
 			BotListBlue[i]->ReverseAccuracy = -BlueMatchBots[i].ShotAccuracy;
 			BotListBlue[i]->ReactionTime = BlueMatchBots[i].ReactionTime;
+			BotListBlue[i]->ReportToController = this;
 		}
 	}
 
@@ -57,22 +49,21 @@ void ASpawnController::SpawnAI()
 	for ( int i = 0; i < TeamSize; i++ )
 	{
 		OffSet.X = i * 500;
-		BotListRed[i] = GetWorld()->SpawnActor<ABot>(AIToSpawn, SpawnPointRed[0]->GetActorLocation() + OffSet , SpawnPointRed[0]->GetActorRotation());
+		BotListRed[i] = GetWorld()->SpawnActor<ABot>(AIToSpawn, SpawnPointRed->GetActorLocation() + OffSet , SpawnPointRed->GetActorRotation());
 		if(BotListRed[i] != nullptr)
 		{
 			BotListRed[i]->SetRedTeam();
 			BotListRed[i]->Accuracy = RedMatchBots[i].ShotAccuracy;
 			BotListRed[i]->ReverseAccuracy = -RedMatchBots[i].ShotAccuracy;
 			BotListRed[i]->ReactionTime = RedMatchBots[i].ReactionTime;
+			BotListRed[i]->ReportToController = this;
 		}
 	}
 	
 	
 }
-
 void ASpawnController::CheckEnemysLeft(bool isBlue)
 {
-	
 	//Check run after Death to see if round is over
 	if(isBlue == true)
 	{
@@ -103,9 +94,9 @@ void ASpawnController::ResetRound()
 	RoundNumber = RoundNumber + 1;
 	if(RoundNumber == 6)
 	{
-		FVector temp = SpawnPointBlue[0]->GetActorLocation();
-		SpawnPointBlue[0]->SetActorLocation(SpawnPointRed[0]->GetActorLocation());
-		SpawnPointRed[0]->SetActorLocation(temp);
+		FVector temp = SpawnPointBlue->GetActorLocation();
+		SpawnPointBlue->SetActorLocation(SpawnPointRed->GetActorLocation());
+		SpawnPointRed->SetActorLocation(temp);
 	}
 	if(Score.X == 7)
 	{
@@ -125,12 +116,12 @@ void ASpawnController::ResetRound()
 		for ( int i = 0; i < TeamSize; i++ )
 		{
 			OffSet.X = i * 500;
-			BotListBlue[i]->RespawnBlueBot(SpawnPointBlue[0]->GetActorLocation()+ OffSet);
+			BotListBlue[i]->RespawnBlueBot(SpawnPointBlue->GetActorLocation()+ OffSet);
 		}
 		for ( int j = 0; j < TeamSize; j++ )
 		{
 			OffSet.X = j * 500;
-			BotListRed[j]->RespawnRedBot(SpawnPointRed[0]->GetActorLocation() + OffSet);
+			BotListRed[j]->RespawnRedBot(SpawnPointRed->GetActorLocation() + OffSet);
 		}
 	}
 

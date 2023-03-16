@@ -1,6 +1,6 @@
 RowName,IDNum,InGame,GamesPlayed,SkillRating
 Bot0,0,FALSE,0,1500.0
-Bot1,1,FALSE,2,2000.0
+Bot1,1,FALSE,0,2000.0
 Bot2,2,FALSE,0,1500.0
 Bot3,3,FALSE,0,1500.0
 Bot4,4,FALSE,0,1500.0

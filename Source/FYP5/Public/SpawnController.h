@@ -46,10 +46,10 @@ public:
 	TSubclassOf<AActor>AIToSpawn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<AActor*> SpawnPointBlue;
+	AActor* SpawnPointBlue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<AActor*> SpawnPointRed;
+	AActor* SpawnPointRed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<ABot*> BotListBlue;
@@ -63,7 +63,6 @@ public:
 	int DeadCountBlue;
 	int DeadCountRed;
 
-	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Scoring")
 	FVector2D Score;
