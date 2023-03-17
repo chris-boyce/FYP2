@@ -9,7 +9,7 @@
 #include "SpawnController.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRoundEnd);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRoundEnd, int, ServerID, TArray<int>, BotIDs);
 UCLASS()
 class FYP5_API ASpawnController : public AActor
 {
@@ -29,7 +29,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TMap<int, FBotData> BlueMatchBots;
 
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int SpawnControllerIDNum;
 	
 	virtual void Tick(float DeltaTime) override;
 
@@ -75,10 +76,12 @@ public:
 	UFUNCTION(BlueprintCallable , Category="Rounds")
 	void ResetRound();
 	
+	UFUNCTION(BlueprintCallable , Category="Rounds")
+	void EndGame();
+
 	UPROPERTY(BlueprintAssignable, Category = "EventCaller")
 	FOnRoundEnd OnRoundEnd;
 	
-	UFUNCTION(BlueprintCallable , Category="Rounds")
-	void EndGame();
+
 
 };

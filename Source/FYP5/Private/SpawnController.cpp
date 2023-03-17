@@ -129,7 +129,17 @@ void ASpawnController::ResetRound()
 
 void ASpawnController::EndGame()
 {
-	OnRoundEnd.Broadcast();
+	TArray<int> BotIDs;
+	for(int i = 0; i < TeamSize; i++)
+	{
+		BotIDs.Add(RedMatchBots[i].IDNum);
+	}
+	for(int i = 0; i < TeamSize; i++)
+	{
+		BotIDs.Add(BlueMatchBots[i].IDNum);
+	}
+	
+	OnRoundEnd.Broadcast(SpawnControllerIDNum, BotIDs);
 	UE_LOG(LogTemp, Warning, TEXT("SpawnerCalled End Game"));
 }
 	

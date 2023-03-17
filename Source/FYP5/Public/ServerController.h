@@ -56,24 +56,50 @@ public:
 	AServerController();
 	virtual void Tick(float DeltaTime) override;
 
+	//MatchMaking -- Finds the players 10 percent from lobby Average -- Can Change
+	UFUNCTION(BlueprintCallable , Category="MatchMaking")
+	void LobbyMaker();
+	//Sorts the collected players into Teams
+	UFUNCTION(BlueprintCallable , Category="MatchMaking")
+	void SortTeams();
+	//Finds a Empty Server for the player
+	UFUNCTION(BlueprintCallable , Category="MatchMaking")
+	void ServerSelector();
+	//Starts the match Needs Server ID
+	UFUNCTION(BlueprintCallable , Category="MatchMaking")
+	void CreateMatch(int ServerToConnect);
+	//Starts the match Needs Server ID
+	UFUNCTION(BlueprintCallable , Category="MatchMaking")
+	bool IsEmptyServers();
+	//Match Making Variables
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	float AverageSkillRating;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	float TotalSkillRating;
+	
 	//Temp Variables To Pass Data Around Inside This Script
 	FBotData LocalBotData;
 	TArray<AActor*> ActorSpawnController;
 	ASpawnController* SpawnController;
+	int ServerToLoad;
 	
-	//Starts the match Needs Server ID
-	UFUNCTION(BlueprintCallable , Category="Event Reciever")
-	void CreateMatch(int ServerToConnect);
+	//Used to check the diff of players in MM
+	UFUNCTION(BlueprintCallable, Category="Math")
+	float PercentageDifference(float FirstNum, float SecNum);
 	
 	//Lobby Set Up Take Bot Id Nums
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TArray<int> RedLobbyBot;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TArray<int> BlueLobbyBot;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TArray<int> FullLobby;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	int LobbyCounter;
 
 	//Called By the SpawnController - when ended
 	UFUNCTION(BlueprintCallable , Category="Event Reciever")
-	void EndGame();
+	void EndGame(int ServerID , TArray<int>BotID);
 	
 	//Server Map (Spawn Controller, If Server is Active)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
