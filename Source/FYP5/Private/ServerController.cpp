@@ -166,7 +166,26 @@ bool AServerController::IsEmptyServers()
 void AServerController::EndGame(int ServerID , TArray<int>BotID)//Needs to pass in Server ID and All Bot IDs
 {
 	ServerStatus[ServerID].IsActive = false;
-	UE_LOG(LogTemp, Warning, TEXT("Server Says Game Over"));
+	for (int i = 0; i < BotID.Num(); i++)
+	{
+		BotServerStatus[BotID[i]].InGame = false;
+		BotServerStatus[BotID[i]].GamesPlayed += 1;
+	}
+	RefreshArray();
+	int count = 0;
+	for (int i = 0; i < ServerStatus.Num(); i++)
+	{
+		if(ServerStatus[i].IsActive == false)
+		{
+			count += 1;
+		}
+	}
+	if(count >= ServerStatus.Num())
+	{
+		LobbyMaker();
+		UE_LOG(LogTemp, Warning, TEXT("RESTARTING THE SERVER FINDING"));
+	}
+	
 }
 
 

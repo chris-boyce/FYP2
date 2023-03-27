@@ -1,26 +1,8 @@
-BOTID,Kills,Deaths
-7,3,2,Win
 
-7,0,0,Lose
+7,6,6,Lose
 
-7,0,1,Win
+7,1,3,Lose
 
-7,0,1,Lose
+7,4,3,Lose
 
-7,0,0,Win
-
-7,0,2,Win
-
-7,3,10,Win
-
-7,2,7,Win
-
-7,1,8,Win
-
-7,1,7,Win
-
-7,2,7,Lose
-
-7,4,10,Lose
-
-7,5,7,Lose
+7,10,6,Lose
