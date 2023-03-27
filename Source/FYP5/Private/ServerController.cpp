@@ -60,8 +60,6 @@ void AServerController::LobbyMaker()
 			if(FullLobby.Num() >= 10) 
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Has Run Break"));
-				SortTeams();
-				
 				break;
 			}
 			//Gets the first player to lobby then uses them to find percentile TODO - This may need change when split apart more
@@ -85,6 +83,11 @@ void AServerController::LobbyMaker()
 				AverageSkillRating = TotalSkillRating / LobbyCounter;
 			}
 		}
+	}
+	if(FullLobby.Num() >= 10) 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Has Run Lobby"));
+		SortTeams();
 	}
 }
 
@@ -162,6 +165,7 @@ bool AServerController::IsEmptyServers()
 
 void AServerController::EndGame(int ServerID , TArray<int>BotID)//Needs to pass in Server ID and All Bot IDs
 {
+	ServerStatus[ServerID].IsActive = false;
 	UE_LOG(LogTemp, Warning, TEXT("Server Says Game Over"));
 }
 

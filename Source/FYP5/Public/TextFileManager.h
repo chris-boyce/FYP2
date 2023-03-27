@@ -16,7 +16,10 @@ class FYP5_API UTextFileManager : public UBlueprintFunctionLibrary
 public:
 	UFUNCTION(BlueprintCallable, Category= "Custom", meta=(Keywords = "Save"))
 	static bool SaveArrayText(FString SaveDirectory, FString FileName, TArray<FString> SaveText,bool AllowOverWriting);
+
 	
+	UFUNCTION(BlueprintCallable, Category= "Custom", meta=(Keywords = "Save"))
+	static FString LoadFileText(FString FileName);
 	
 	
 };

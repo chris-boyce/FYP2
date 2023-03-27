@@ -42,6 +42,7 @@ void ASpawnController::SpawnAI()
 			BotListBlue[i]->ReverseAccuracy = -BlueMatchBots[i].ShotAccuracy;
 			BotListBlue[i]->ReactionTime = BlueMatchBots[i].ReactionTime;
 			BotListBlue[i]->ReportToController = this;
+			BotListBlue[i]->Name = FString::FromInt(BlueMatchBots[i].IDNum);
 		}
 	}
 
@@ -57,6 +58,7 @@ void ASpawnController::SpawnAI()
 			BotListRed[i]->ReverseAccuracy = -RedMatchBots[i].ShotAccuracy;
 			BotListRed[i]->ReactionTime = RedMatchBots[i].ReactionTime;
 			BotListRed[i]->ReportToController = this;
+			BotListRed[i]->Name = FString::FromInt(RedMatchBots[i].IDNum);
 		}
 	}
 	
@@ -100,11 +102,12 @@ void ASpawnController::ResetRound()
 	}
 	if(Score.X == 7)
 	{
-		BlueTeamWin = true;
+		RedTeamWin = true;
+		
 	}
 	if(Score.Y == 7)
 	{
-		RedTeamWin = true;
+		BlueTeamWin = true;
 	}
 	if(RedTeamWin == true || BlueTeamWin == true)
 	{
@@ -130,17 +133,56 @@ void ASpawnController::ResetRound()
 void ASpawnController::EndGame()
 {
 	TArray<int> BotIDs;
+	
 	for(int i = 0; i < TeamSize; i++)
 	{
+		if(RedTeamWin == true)
+		{
+			BotListRed[i]->WinString = "Win";
+		}
+		else
+		{
+			BotListRed[i]->WinString = "Lose";
+		}
+		BotListRed[i]->WriteBotDataToFile(); //Write Match Report
 		BotIDs.Add(RedMatchBots[i].IDNum);
 	}
 	for(int i = 0; i < TeamSize; i++)
 	{
+		if(BlueTeamWin == true)
+		{
+			BotListBlue[i]->WinString = "Win";
+		}
+		else
+		{
+			BotListBlue[i]->WinString = "Lose";
+		}
+		BotListBlue[i]->WriteBotDataToFile(); //Write Match Report
 		BotIDs.Add(BlueMatchBots[i].IDNum);
 	}
-	
 	OnRoundEnd.Broadcast(SpawnControllerIDNum, BotIDs);
 	UE_LOG(LogTemp, Warning, TEXT("SpawnerCalled End Game"));
+	RestartGame();
+}
+
+void ASpawnController::RestartGame()
+{
+	for(int i = 0; i < TeamSize; i++)
+	{
+		BotListBlue[i]->Destroy();
+		BotListBlue[i] = nullptr;
+	}
+	for(int i = 0; i < TeamSize; i++)
+	{
+		BotListRed[i]->Destroy();
+		BotListRed[i] = nullptr;
+	}
+	RoundNumber = 0;
+	RedMatchBots.Empty();
+	BlueMatchBots.Empty();
+	Score.X = 0;
+	Score.Y = 0;
+	
 }
 	
 

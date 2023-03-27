@@ -60,6 +60,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float ReverseAccuracy;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString WinString;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString SkillRating;
+
+	UFUNCTION(BlueprintImplementableEvent , Category="FileWriting")
+	void WriteBotDataToFile();
+
 	
 	
 	

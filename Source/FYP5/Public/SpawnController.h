@@ -79,6 +79,9 @@ public:
 	UFUNCTION(BlueprintCallable , Category="Rounds")
 	void EndGame();
 
+	UFUNCTION(BlueprintCallable , Category="Rounds")
+	void RestartGame();
+
 	UPROPERTY(BlueprintAssignable, Category = "EventCaller")
 	FOnRoundEnd OnRoundEnd;
 	

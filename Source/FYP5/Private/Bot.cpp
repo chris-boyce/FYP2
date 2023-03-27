@@ -18,7 +18,7 @@ void ABot::BeginPlay()
 	Super::BeginPlay();
 	Kills = 0;
 	Deaths = 0;
-	
+
 }
 
 // Called every frame
