@@ -103,7 +103,6 @@ void ASpawnController::ResetRound()
 	if(Score.X == 7)
 	{
 		RedTeamWin = true;
-		
 	}
 	if(Score.Y == 7)
 	{
@@ -130,20 +129,43 @@ void ASpawnController::ResetRound()
 
 }
 
+void ASpawnController::EloCalc()
+{
+	e1 = 1.0 * 1.0/ (1+ 1.0* pow(10, 1.0 * (AverageBlueElo - AverageRedElo) / 400));
+	e2 = 1.0 * 1.0/ (1+ 1.0* pow(10, 1.0 * (AverageRedElo - AverageBlueElo) / 400));
+
+	if(BlueTeamWin)
+	{
+		NewBlueRating = AverageBlueElo + 40 * (1 - e1);
+		NewRedRating = AverageRedElo + 40 * (0 - e2);
+	}
+	else
+	{
+		NewBlueRating = AverageBlueElo + 40 * (0 - e1);
+		NewRedRating = AverageRedElo + 40 * (1, e2);
+	}
+	RedEloChange = NewRedRating - AverageRedElo;
+	BlueEloChange = NewBlueRating - AverageBlueElo;
+
+}
+
 void ASpawnController::EndGame()
 {
+	EloCalc();
 	TArray<int> BotIDs;
 	for(int i = 0; i < TeamSize; i++)
 	{
 		if(RedTeamWin == true)
 		{
 			BotListRed[i]->WinString = "Win";
+			
 		}
 		else
 		{
 			BotListRed[i]->WinString = "Lose";
 		}
 		BotListRed[i]->WriteBotDataToFile(); //Write Match Report
+		OnEloChange.Broadcast(RedMatchBots[i].IDNum, RedEloChange);
 		BotIDs.Add(RedMatchBots[i].IDNum);
 	}
 	for(int i = 0; i < TeamSize; i++)
@@ -157,6 +179,7 @@ void ASpawnController::EndGame()
 			BotListBlue[i]->WinString = "Lose";
 		}
 		BotListBlue[i]->WriteBotDataToFile(); //Write Match Report
+		OnEloChange.Broadcast(BlueMatchBots[i].IDNum, BlueEloChange);
 		BotIDs.Add(BlueMatchBots[i].IDNum);
 	}
 	

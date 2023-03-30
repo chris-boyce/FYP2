@@ -10,6 +10,7 @@
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRoundEnd, int, ServerID, TArray<int>, BotIDs);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEloChange, int, BotID, float, AmountChange);
 UCLASS()
 class FYP5_API ASpawnController : public AActor
 {
@@ -75,6 +76,9 @@ public:
 
 	UFUNCTION(BlueprintCallable , Category="Rounds")
 	void ResetRound();
+
+	UFUNCTION(BlueprintCallable , Category="Elo")
+	void EloCalc();
 	
 	UFUNCTION(BlueprintCallable , Category="Rounds")
 	void EndGame();
@@ -84,6 +88,29 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "EventCaller")
 	FOnRoundEnd OnRoundEnd;
+
+	UPROPERTY(BlueprintAssignable, Category = "EventCaller")
+	FOnEloChange OnEloChange;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float AverageBlueElo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float AverageRedElo;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float e1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float e2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float NewBlueRating;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float NewRedRating;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float RedEloChange;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BlueEloChange;
 	
 
 

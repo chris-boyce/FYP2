@@ -82,6 +82,8 @@ public:
 	TArray<AActor*> ActorSpawnController;
 	ASpawnController* SpawnController;
 	int ServerToLoad;
+	float AverageRedElo;
+	float AverageBlueElo;
 	
 	//Used to check the diff of players in MM
 	UFUNCTION(BlueprintCallable, Category="Math")
@@ -100,6 +102,9 @@ public:
 	//Called By the SpawnController - when ended
 	UFUNCTION(BlueprintCallable , Category="Event Reciever")
 	void EndGame(int ServerID , TArray<int>BotID);
+
+	UFUNCTION(BlueprintCallable , Category="Elo Changing")
+	void ChangeElo(int BotID, float EloChange);
 	
 	//Server Map (Spawn Controller, If Server is Active)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

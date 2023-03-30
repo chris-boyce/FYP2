@@ -73,7 +73,7 @@ void AServerController::LobbyMaker()
 				LobbyCounter = 1;
 			}
 			//Adds Bot to Lobby depending if they are close to server avarage - ATM 10%
-			else if(PercentageDifference(BotServerStatus[i].SkillRating, AverageSkillRating) < 10)
+			else if(PercentageDifference(BotServerStatus[i].SkillRating, AverageSkillRating) < 20)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Has Added New Bot"));
 				FullLobby.Add(BotServerStatus[i].IDNum);
@@ -96,10 +96,12 @@ void AServerController::SortTeams()
 	for(int i = 0; i < 5; i++)
 	{
 		RedLobbyBot.Add(FullLobby[i]);
+		AverageRedElo += BotServerStatus[FullLobby[i]].SkillRating;
 	}
 	for(int i = 0; i < 5; i++)
 	{
 		BlueLobbyBot.Add(FullLobby[i + 5 ]);
+		AverageBlueElo += BotServerStatus[FullLobby[i + 5]].SkillRating;
 	}
 	ServerSelector();
 }
@@ -122,6 +124,7 @@ void AServerController::CreateMatch(int ServerToConnect)
 	//Sets the Server to Active and binds the end to call back event for when game is over
 	ServerStatus[ServerToConnect].IsActive = true;
 	SpawnController->OnRoundEnd.AddDynamic(this, &AServerController::EndGame);
+	SpawnController->OnEloChange.AddDynamic(this, &AServerController::ChangeElo);
 
 	//Adds Bot Data for Bot Stat Map to a local Map on the Spawn Controller - Then giving the data to the bot spawned
 	for(int i = 0; i < RedLobbyBot.Num(); i++)
@@ -134,10 +137,17 @@ void AServerController::CreateMatch(int ServerToConnect)
 		LocalBotData = BotStatsMap[BlueLobbyBot[i]];
 		SpawnController->BlueMatchBots.Add(i, LocalBotData );
 	}
+	SpawnController->AverageBlueElo = AverageBlueElo / 5;
+	SpawnController->AverageRedElo = AverageRedElo / 5;
+
+
+	
 	//Calls the start of the game and spawns the bots once data is passed
 	SpawnController->SpawnAI();
 
 	//Reset The Server Stats for reruns
+	AverageRedElo = 0;
+	AverageBlueElo = 0;
 	FullLobby.Empty();
 	RedLobbyBot.Empty();
 	BlueLobbyBot.Empty();
@@ -186,6 +196,12 @@ void AServerController::EndGame(int ServerID , TArray<int>BotID)//Needs to pass 
 		UE_LOG(LogTemp, Warning, TEXT("RESTARTING THE SERVER FINDING"));
 	}
 	
+}
+
+void AServerController::ChangeElo(int BotID, float EloChange)
+{
+	BotServerStatus[BotID].SkillRating += EloChange;
+	UE_LOG(LogTemp, Warning, TEXT("Elo Changed Called"));
 }
 
 
