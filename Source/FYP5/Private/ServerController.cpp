@@ -13,6 +13,7 @@ AServerController::AServerController()
 void AServerController::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	//Gets all the SpawnController and makes a Map -- Key = ServerIDNum, Data = Actor SpawnController, Bool IsActive
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnController::StaticClass(), ActorSpawnController);
 	for(int i = 0; i < ActorSpawnController.Num(); i++)
@@ -27,8 +28,10 @@ void AServerController::BeginPlay()
 	BotStatsWriteArrayToMap();
 	ServerWriteDataTableToArray();
 	ServerWriteArrayToMap();
+	OrderMap();
 	//Matchmaking start Chain - LobbyMaker -> LobbySorting -> Server Finding -> CreateMatch
 	LobbyMaker();
+	
 }
 
 void AServerController::Tick(float DeltaTime)
@@ -51,7 +54,28 @@ void AServerController::ServerSelector()
 
 void AServerController::LobbyMaker()
 {
-	//Goes Through BotServerData if not in game add to Lobby
+	for (auto& Elem : OrderMapBotServerData)
+	{
+		if(FullLobby.Num() >= 10) 
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Has Run Break"));
+			break;
+		}
+		if(!Elem.Value.InGame)
+		{
+			FullLobby.Add(Elem.Value.IDNum);
+			Elem.Value.InGame = true;
+		}
+	}
+	
+	if(FullLobby.Num() >= 10) 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Has Run Lobby!!!"));
+		SortTeams();
+	}
+
+	//Legacy Code Now :)
+	/*Goes Through BotServerData if not in game add to Lobby
 	for(int i = 0; i < BotServerStatus.Num(); i++)
 	{
 		if(BotServerStatus[i].InGame == false)
@@ -89,6 +113,7 @@ void AServerController::LobbyMaker()
 		UE_LOG(LogTemp, Warning, TEXT("Has Run Lobby"));
 		SortTeams();
 	}
+	*/
 }
 
 void AServerController::SortTeams()
@@ -139,12 +164,10 @@ void AServerController::CreateMatch(int ServerToConnect)
 	}
 	SpawnController->AverageBlueElo = AverageBlueElo / 5;
 	SpawnController->AverageRedElo = AverageRedElo / 5;
-
-
 	
 	//Calls the start of the game and spawns the bots once data is passed
 	SpawnController->SpawnAI();
-
+	
 	//Reset The Server Stats for reruns
 	AverageRedElo = 0;
 	AverageBlueElo = 0;
@@ -153,12 +176,12 @@ void AServerController::CreateMatch(int ServerToConnect)
 	BlueLobbyBot.Empty();
 	AverageSkillRating = 0;
 	TotalSkillRating = 0;
-	LobbyCounter = 0;
 
 	if(IsEmptyServers())
 	{
 		LobbyMaker();
 	}
+	
 }
 
 bool AServerController::IsEmptyServers()
@@ -171,6 +194,17 @@ bool AServerController::IsEmptyServers()
 		}
 	}
 	return false;
+}
+
+
+void AServerController::OrderMap()
+{
+	OrderMapBotServerData = BotServerStatus;
+	OrderMapBotServerData.ValueSort([] (FBotSeverData a, FBotSeverData b)
+	{
+		return a.SkillRating < b.SkillRating;
+	});
+	
 }
 
 void AServerController::EndGame(int ServerID , TArray<int>BotID)//Needs to pass in Server ID and All Bot IDs
@@ -190,8 +224,9 @@ void AServerController::EndGame(int ServerID , TArray<int>BotID)//Needs to pass 
 			count += 1;
 		}
 	}
-	if(count >= ServerStatus.Num())
+	if(count >= ServerStatus.Num()) //Once all servers are empty
 	{
+		OrderMap();
 		LobbyMaker();
 		UE_LOG(LogTemp, Warning, TEXT("RESTARTING THE SERVER FINDING"));
 	}

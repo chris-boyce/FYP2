@@ -77,6 +77,11 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	float TotalSkillRating;
 	
+	UFUNCTION(BlueprintCallable , Category="MatchMaking")
+	void OrderMap();
+
+	
+	
 	//Temp Variables To Pass Data Around Inside This Script
 	FBotData LocalBotData;
 	TArray<AActor*> ActorSpawnController;
@@ -115,6 +120,9 @@ public:
 	//Live Map of Bot data (Bot ID, Ingame Status, Games Player, Skill Rating)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TMap<int, FBotSeverData> BotServerStatus;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TMap<int, FBotSeverData> OrderMapBotServerData;
 	
 	//BOT STUFF -- Blueprint
 	//Writes Array from Data Table
