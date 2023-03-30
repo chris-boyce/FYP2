@@ -123,11 +123,17 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TMap<int, FBotSeverData> OrderMapBotServerData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int LevelSave;
 	
 	//BOT STUFF -- Blueprint
 	//Writes Array from Data Table
 	UFUNCTION(BlueprintImplementableEvent , Category="FileWriting")
 	void BotStatsWriteDataTableToArray();
+	
+	UFUNCTION(BlueprintImplementableEvent , Category="FileWriting")
+	void SaveBotStatsToNewFileAtEndLevel();
 	//Makes Map from the array
 	UFUNCTION(BlueprintImplementableEvent , Category="FileWriting")
 	void BotStatsWriteArrayToMap();

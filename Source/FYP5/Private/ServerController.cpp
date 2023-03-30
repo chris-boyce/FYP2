@@ -28,6 +28,7 @@ void AServerController::BeginPlay()
 	BotStatsWriteArrayToMap();
 	ServerWriteDataTableToArray();
 	ServerWriteArrayToMap();
+	SaveBotStatsToNewFileAtEndLevel();
 	OrderMap();
 	//Matchmaking start Chain - LobbyMaker -> LobbySorting -> Server Finding -> CreateMatch
 	LobbyMaker();
@@ -118,6 +119,20 @@ void AServerController::LobbyMaker()
 
 void AServerController::SortTeams()
 {
+	if (FullLobby.Num() > 0)
+	{
+		int32 LastIndex = FullLobby.Num() - 1;
+		for (int32 i = 0; i <= LastIndex; ++i)
+		{
+			int32 Index = FMath::RandRange(i, LastIndex);
+			if (i != Index)
+			{
+				FullLobby.Swap(i, Index);
+			}
+		}
+	}
+
+	
 	for(int i = 0; i < 5; i++)
 	{
 		RedLobbyBot.Add(FullLobby[i]);
@@ -226,6 +241,8 @@ void AServerController::EndGame(int ServerID , TArray<int>BotID)//Needs to pass 
 	}
 	if(count >= ServerStatus.Num()) //Once all servers are empty
 	{
+		LevelSave++;
+		SaveBotStatsToNewFileAtEndLevel();
 		OrderMap();
 		LobbyMaker();
 		UE_LOG(LogTemp, Warning, TEXT("RESTARTING THE SERVER FINDING"));
