@@ -39,9 +39,9 @@ struct FServerStatus
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	AActor* SpawnController;
+	AActor* SpawnController = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool IsActive;
+	bool IsActive = false;
 	
 };
 //End of Stupid
