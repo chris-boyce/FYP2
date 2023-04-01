@@ -28,7 +28,11 @@ void AServerController::BeginPlay()
 	BotStatsWriteArrayToMap();
 	ServerWriteDataTableToArray();
 	ServerWriteArrayToMap();
-	SaveBotStatsToNewFileAtEndLevel();
+	
+	//SaveBotStatsToNewFileAtEndLevel();
+	ServerWriteDataTableToArrayTS();
+	ServerWriteArrayToMapTS();
+	//ServerEditDataInMapAndArrayTS(0,1,22,8.1);
 	OrderMap();
 	//Matchmaking start Chain - LobbyMaker -> LobbySorting -> Server Finding -> CreateMatch
 	LobbyMaker();
@@ -55,7 +59,7 @@ void AServerController::ServerSelector()
 
 void AServerController::LobbyMaker()
 {
-	for (auto& Elem : OrderMapBotServerData)
+	for (auto& Elem : OrderMapBotServerDataTS)
 	{
 		if(FullLobby.Num() >= 10) 
 		{
@@ -136,12 +140,12 @@ void AServerController::SortTeams()
 	for(int i = 0; i < 5; i++)
 	{
 		RedLobbyBot.Add(FullLobby[i]);
-		AverageRedElo += BotServerStatus[FullLobby[i]].SkillRating;
+		AverageRedElo += BotServerStatusTS[FullLobby[i]].Mu;
 	}
 	for(int i = 0; i < 5; i++)
 	{
 		BlueLobbyBot.Add(FullLobby[i + 5 ]);
-		AverageBlueElo += BotServerStatus[FullLobby[i + 5]].SkillRating;
+		AverageBlueElo += BotServerStatusTS[FullLobby[i + 5]].Mu;
 	}
 	ServerSelector();
 }
@@ -214,11 +218,24 @@ bool AServerController::IsEmptyServers()
 
 void AServerController::OrderMap()
 {
+	/*
 	OrderMapBotServerData = BotServerStatus;
 	OrderMapBotServerData.ValueSort([] (FBotSeverData a, FBotSeverData b)
 	{
 		return a.SkillRating < b.SkillRating;
 	});
+	*/
+	OrderMapBotServerDataTS = BotServerStatusTS;
+	if(FirstRun == true)
+	{
+		OrderMapBotServerDataTS.ValueSort([] (FBotSeverDataTrueSkill a, FBotSeverDataTrueSkill b)
+		{
+			return a.Mu < b.Mu;
+		});
+		
+	}
+	FirstRun = true;
+	
 	
 }
 
@@ -227,8 +244,8 @@ void AServerController::EndGame(int ServerID , TArray<int>BotID)//Needs to pass 
 	ServerStatus[ServerID].IsActive = false;
 	for (int i = 0; i < BotID.Num(); i++)
 	{
-		BotServerStatus[BotID[i]].InGame = false;
-		BotServerStatus[BotID[i]].GamesPlayed += 1;
+		BotServerStatusTS[BotID[i]].InGame = false;
+		BotServerStatusTS[BotID[i]].GamesPlayed += 1;
 	}
 	RefreshArray();
 	int count = 0;
@@ -252,7 +269,7 @@ void AServerController::EndGame(int ServerID , TArray<int>BotID)//Needs to pass 
 
 void AServerController::ChangeElo(int BotID, float EloChange)
 {
-	BotServerStatus[BotID].SkillRating += EloChange;
+	//BotServerStatus[BotID].SkillRating += EloChange;
 	UE_LOG(LogTemp, Warning, TEXT("Elo Changed Called"));
 }
 

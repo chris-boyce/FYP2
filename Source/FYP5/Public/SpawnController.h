@@ -77,8 +77,8 @@ public:
 	UFUNCTION(BlueprintCallable , Category="Rounds")
 	void ResetRound();
 
-	UFUNCTION(BlueprintCallable , Category="Elo")
-	void EloCalc();
+	//UFUNCTION(BlueprintCallable , Category="Elo")
+	//void EloCalc();
 	
 	UFUNCTION(BlueprintCallable , Category="Rounds")
 	void EndGame();
@@ -98,11 +98,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float AverageRedElo;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float e1;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float e2;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float NewBlueRating;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

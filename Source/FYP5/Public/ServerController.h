@@ -34,6 +34,23 @@ public:
 	float SkillRating;
 };
 USTRUCT(BlueprintType)
+struct FBotSeverDataTrueSkill : public FTableRowBase
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int IDNum;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool InGame;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int GamesPlayed;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Mu;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Sigma;
+	
+};
+USTRUCT(BlueprintType)
 struct FServerStatus
 {
 	GENERATED_BODY()
@@ -81,7 +98,6 @@ public:
 	void OrderMap();
 
 	
-	
 	//Temp Variables To Pass Data Around Inside This Script
 	FBotData LocalBotData;
 	TArray<AActor*> ActorSpawnController;
@@ -89,6 +105,7 @@ public:
 	int ServerToLoad;
 	float AverageRedElo;
 	float AverageBlueElo;
+	bool FirstRun;
 	
 	//Used to check the diff of players in MM
 	UFUNCTION(BlueprintCallable, Category="Math")
@@ -122,7 +139,13 @@ public:
 	TMap<int, FBotSeverData> BotServerStatus;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TMap<int, FBotSeverDataTrueSkill> BotServerStatusTS;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TMap<int, FBotSeverData> OrderMapBotServerData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TMap<int, FBotSeverDataTrueSkill> OrderMapBotServerDataTS;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int LevelSave;
@@ -141,6 +164,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent , Category="FileWriting")
 	void BotStatsEditDataInMapAndArray(int IDNum, float ReactionTime, float Accuracy);
 
+	
+
 	//SERVER STUFF -- Blueprint
 	//Start of Game Loads into a array to be used later to write to
 	UFUNCTION(BlueprintImplementableEvent , Category="FileWriting")
@@ -148,9 +173,19 @@ public:
 	//Used to enter data into a map
 	UFUNCTION(BlueprintImplementableEvent , Category="FileWriting")
 	void ServerWriteArrayToMap();
+
+	UFUNCTION(BlueprintImplementableEvent , Category="FileWriting")
+	void ServerWriteArrayToMapTS();
+
+	UFUNCTION(BlueprintImplementableEvent , Category="FileWriting")
+	void ServerWriteDataTableToArrayTS();
+	
 	//Used to edit both array and data map
 	UFUNCTION(BlueprintImplementableEvent , Category="FileWriting")
 	void ServerEditDataInMapAndArray(int IDNum, int GamesPlayed, float SkillRating);
+
+	UFUNCTION(BlueprintImplementableEvent , Category="FileWriting")
+	void ServerEditDataInMapAndArrayTS(int IDNum, int GamesPlayed, float Mu, float Sigma);
 	//Edit just the map
 	UFUNCTION(BlueprintImplementableEvent , Category="FileWriting")
 	void ServerEditMap(int IDNum, int GamesPlayed, float SkillRating);

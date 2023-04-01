@@ -12,7 +12,6 @@ ASpawnController::ASpawnController()
 	TeamSize = 5;
 	BotListBlue.SetNum(TeamSize);
 	BotListRed.SetNum(TeamSize);
-
 }
 
 void ASpawnController::BeginPlay()
@@ -24,12 +23,10 @@ void ASpawnController::BeginPlay()
 void ASpawnController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 void ASpawnController::SpawnAI()
 {
 	//Spawns Bots and Keeps them in List of Each Team
-
 	for ( int i = 0; i < TeamSize; i++ )
 	{
 		OffSet.X = i * 500;
@@ -128,7 +125,7 @@ void ASpawnController::ResetRound()
 	}
 
 }
-
+/*
 void ASpawnController::EloCalc()
 {
 	e1 = 1.0 * 1.0/ (1+ 1.0* pow(10, 1.0 * (AverageBlueElo - AverageRedElo) / 400));
@@ -148,10 +145,10 @@ void ASpawnController::EloCalc()
 	BlueEloChange = NewBlueRating - AverageBlueElo;
 
 }
+*/
 
 void ASpawnController::EndGame()
 {
-	EloCalc();
 	TArray<int> BotIDs;
 	for(int i = 0; i < TeamSize; i++)
 	{
