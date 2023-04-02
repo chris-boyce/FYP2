@@ -9,8 +9,11 @@
 #include "SpawnController.generated.h"
 
 
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRoundEnd, int, ServerID, TArray<int>, BotIDs);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEloChange, int, BotID, float, AmountChange);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTrueskillChange, int, BotID, FRating, BotData);
+
 UCLASS()
 class FYP5_API ASpawnController : public AActor
 {
@@ -79,6 +82,39 @@ public:
 
 	//UFUNCTION(BlueprintCallable , Category="Elo")
 	//void EloCalc();
+
+	UFUNCTION(BlueprintCallable , Category="Elo")
+	FRating TrueskillCalc(float BotMu, float BotSigma, int Outcome, float EnemyTeamMeanMu);
+	
+	UFUNCTION(BlueprintCallable , Category="Elo")
+	void TeamTrueskillCalc();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float win_probility;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int K;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float outputA;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float outputB;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TMap<int, FBotSeverDataTrueSkill> ConnectedRedTeamBotServerData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TMap<int, FBotSeverDataTrueSkill> ConnectedBlueTeamBotServerData;
+
+	// Define the structure of a team's rating
+	
+
+	FRating BlueTeamRating;
+	FRating RedTeamRating;
+	FRating BotsNewRating;
+
+
+	
 	
 	UFUNCTION(BlueprintCallable , Category="Rounds")
 	void EndGame();
@@ -91,6 +127,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "EventCaller")
 	FOnEloChange OnEloChange;
+
+	UPROPERTY(BlueprintAssignable, Category = "EventCaller")
+	FOnTrueskillChange OnTrueskill;
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float AverageBlueElo;

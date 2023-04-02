@@ -8,6 +8,14 @@
 #include "ServerController.generated.h"
 //I Know this is basically Stupid
 USTRUCT(BlueprintType)
+struct FRating
+{
+	GENERATED_BODY()
+public:
+	float TeamMu;
+	float TeamSigma;
+};
+USTRUCT(BlueprintType)
 struct FBotData : public FTableRowBase
 {
 	GENERATED_BODY()
@@ -125,8 +133,13 @@ public:
 	UFUNCTION(BlueprintCallable , Category="Event Reciever")
 	void EndGame(int ServerID , TArray<int>BotID);
 
-	UFUNCTION(BlueprintCallable , Category="Elo Changing")
+	UFUNCTION(BlueprintCallable , Category="Event Reciever")
 	void ChangeElo(int BotID, float EloChange);
+
+	UFUNCTION(BlueprintCallable , Category="Event Reciever")
+	void ChangeTrueSkill(int BotID, FRating Data);
+
+	
 	
 	//Server Map (Spawn Controller, If Server is Active)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

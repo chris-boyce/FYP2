@@ -26,6 +26,7 @@ void ASpawnController::Tick(float DeltaTime)
 }
 void ASpawnController::SpawnAI()
 {
+	TeamTrueskillCalc();
 	//Spawns Bots and Keeps them in List of Each Team
 	for ( int i = 0; i < TeamSize; i++ )
 	{
@@ -125,6 +126,52 @@ void ASpawnController::ResetRound()
 	}
 
 }
+
+FRating ASpawnController::TrueskillCalc(float BotMu, float BotSigma, int Outcome, float TeamMeanMu)
+{
+	K = 10;
+	float q = 0.05; // Default value for q
+	float c = 2.5; // Default value for c
+	int n = 10; // Total number of players in the match
+	int k = 4; // Number of teammates on the player's team
+	
+	float delta_Mu = BotMu - TeamMeanMu;
+	float denom = sqrt(2 * (BotMu * BotMu + TeamMeanMu * TeamMeanMu));
+	float delta = delta_Mu / denom;
+
+	win_probility = 0.5 * (1 + erf((delta - 0) / (sqrt(2) * 1)));
+	
+	outputA = BotMu + K * (Outcome - win_probility);
+
+	float new_sigma = sqrt((BotSigma * BotSigma * (n - k) + q * c * c) / (n - 1 + q));
+	outputB = new_sigma;
+	FRating temp;
+	temp.TeamMu = outputA;
+	temp.TeamSigma = outputB;
+	return temp;
+
+}
+
+void ASpawnController::TeamTrueskillCalc()
+{
+	for(int i = 0; i < TeamSize; i++)
+	{
+		BlueTeamRating.TeamMu = BlueTeamRating.TeamMu + ConnectedBlueTeamBotServerData[i].Mu;
+	}
+	BlueTeamRating.TeamMu = BlueTeamRating.TeamMu / TeamSize ;
+
+	for(int i = 0; i < TeamSize; i++)
+	{
+		RedTeamRating.TeamMu = RedTeamRating.TeamMu + ConnectedRedTeamBotServerData[i].Mu;
+	}
+	RedTeamRating.TeamMu = RedTeamRating.TeamMu / TeamSize ;
+	
+}
+
+
+
+
+
 /*
 void ASpawnController::EloCalc()
 {
@@ -155,14 +202,20 @@ void ASpawnController::EndGame()
 		if(RedTeamWin == true)
 		{
 			BotListRed[i]->WinString = "Win";
+			BotsNewRating = TrueskillCalc(ConnectedRedTeamBotServerData[i].Mu,ConnectedRedTeamBotServerData[i].Sigma, 1, BlueTeamRating.TeamMu );
+			ConnectedRedTeamBotServerData[i].Mu = BotsNewRating.TeamMu;
+			ConnectedRedTeamBotServerData[i].Sigma = BotsNewRating.TeamSigma;
 			
 		}
 		else
 		{
 			BotListRed[i]->WinString = "Lose";
+			BotsNewRating = TrueskillCalc(ConnectedRedTeamBotServerData[i].Mu,ConnectedRedTeamBotServerData[i].Sigma, 0, BlueTeamRating.TeamMu );
+			ConnectedRedTeamBotServerData[i].Mu = BotsNewRating.TeamMu;
+			ConnectedRedTeamBotServerData[i].Sigma = BotsNewRating.TeamSigma;
 		}
 		BotListRed[i]->WriteBotDataToFile(); //Write Match Report
-		OnEloChange.Broadcast(RedMatchBots[i].IDNum, RedEloChange);
+		OnTrueskill.Broadcast(ConnectedRedTeamBotServerData[i].IDNum, BotsNewRating);
 		BotIDs.Add(RedMatchBots[i].IDNum);
 	}
 	for(int i = 0; i < TeamSize; i++)
@@ -170,13 +223,19 @@ void ASpawnController::EndGame()
 		if(BlueTeamWin == true)
 		{
 			BotListBlue[i]->WinString = "Win";
+			BotsNewRating = TrueskillCalc(ConnectedBlueTeamBotServerData[i].Mu,ConnectedBlueTeamBotServerData[i].Sigma, 1, RedTeamRating.TeamMu );
+			ConnectedBlueTeamBotServerData[i].Mu = BotsNewRating.TeamMu;
+			ConnectedBlueTeamBotServerData[i].Sigma = BotsNewRating.TeamSigma;
 		}
 		else
 		{
 			BotListBlue[i]->WinString = "Lose";
+			BotsNewRating = TrueskillCalc(ConnectedBlueTeamBotServerData[i].Mu,ConnectedBlueTeamBotServerData[i].Sigma, 0, RedTeamRating.TeamMu );
+			ConnectedBlueTeamBotServerData[i].Mu = BotsNewRating.TeamMu;
+			ConnectedBlueTeamBotServerData[i].Sigma = BotsNewRating.TeamSigma;
 		}
 		BotListBlue[i]->WriteBotDataToFile(); //Write Match Report
-		OnEloChange.Broadcast(BlueMatchBots[i].IDNum, BlueEloChange);
+		OnTrueskill.Broadcast(ConnectedBlueTeamBotServerData[i].IDNum, BotsNewRating);
 		BotIDs.Add(BlueMatchBots[i].IDNum);
 	}
 	

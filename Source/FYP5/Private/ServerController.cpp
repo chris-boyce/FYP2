@@ -169,17 +169,20 @@ void AServerController::CreateMatch(int ServerToConnect)
 	ServerStatus[ServerToConnect].IsActive = true;
 	SpawnController->OnRoundEnd.AddDynamic(this, &AServerController::EndGame);
 	SpawnController->OnEloChange.AddDynamic(this, &AServerController::ChangeElo);
+	SpawnController->OnTrueskill.AddDynamic(this, &AServerController::ChangeTrueSkill);
 
 	//Adds Bot Data for Bot Stat Map to a local Map on the Spawn Controller - Then giving the data to the bot spawned
 	for(int i = 0; i < RedLobbyBot.Num(); i++)
 	{
 		LocalBotData = BotStatsMap[RedLobbyBot[i]];
 		SpawnController->RedMatchBots.Add(i, LocalBotData );
+		SpawnController->ConnectedRedTeamBotServerData.Add(i, BotServerStatusTS[RedLobbyBot[i]]);
 	}
 	for(int i = 0; i < BlueLobbyBot.Num(); i++)
 	{
 		LocalBotData = BotStatsMap[BlueLobbyBot[i]];
 		SpawnController->BlueMatchBots.Add(i, LocalBotData );
+		SpawnController->ConnectedBlueTeamBotServerData.Add(i, BotServerStatusTS[BlueLobbyBot[i]]);
 	}
 	SpawnController->AverageBlueElo = AverageBlueElo / 5;
 	SpawnController->AverageRedElo = AverageRedElo / 5;
@@ -271,6 +274,12 @@ void AServerController::ChangeElo(int BotID, float EloChange)
 {
 	//BotServerStatus[BotID].SkillRating += EloChange;
 	UE_LOG(LogTemp, Warning, TEXT("Elo Changed Called"));
+}
+
+void AServerController::ChangeTrueSkill(int BotID, FRating Data)
+{
+	ServerEditDataInMapAndArrayTS(BotID, false, Data.TeamMu, Data.TeamSigma);
+	UE_LOG(LogTemp, Warning, TEXT("TrueSkill Changed Called"));
 }
 
 
