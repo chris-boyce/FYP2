@@ -261,6 +261,15 @@ void AServerController::EndGame(int ServerID , TArray<int>BotID)//Needs to pass 
 	}
 	if(count >= ServerStatus.Num()) //Once all servers are empty
 	{
+		//Deletes Left Over Bots
+		TArray<AActor*> FoundActors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABot::StaticClass(), FoundActors);
+		for (AActor* Actor : FoundActors)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Deleted Left Over Bot"));
+			Actor->Destroy();
+		}
+		
 		LevelSave++;
 		SaveBotStatsToNewFileAtEndLevel();
 		OrderMap();

@@ -129,7 +129,7 @@ void ASpawnController::ResetRound()
 
 FRating ASpawnController::TrueskillCalc(float BotMu, float BotSigma, int Outcome, float TeamMeanMu)
 {
-	K = 10;
+	K = 2.5;
 	float q = 0.05; // Default value for q
 	float c = 2.5; // Default value for c
 	int n = 10; // Total number of players in the match

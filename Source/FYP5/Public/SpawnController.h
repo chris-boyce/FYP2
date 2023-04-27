@@ -108,13 +108,9 @@ public:
 
 	// Define the structure of a team's rating
 	
-
 	FRating BlueTeamRating;
 	FRating RedTeamRating;
 	FRating BotsNewRating;
-
-
-	
 	
 	UFUNCTION(BlueprintCallable , Category="Rounds")
 	void EndGame();
