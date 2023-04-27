@@ -32,7 +32,6 @@ void AServerController::BeginPlay()
 	//SaveBotStatsToNewFileAtEndLevel();
 	ServerWriteDataTableToArrayTS();
 	ServerWriteArrayToMapTS();
-	//ServerEditDataInMapAndArrayTS(0,1,22,8.1);
 	OrderMap();
 	//Matchmaking start Chain - LobbyMaker -> LobbySorting -> Server Finding -> CreateMatch
 	LobbyMaker();
@@ -59,7 +58,7 @@ void AServerController::ServerSelector()
 
 void AServerController::LobbyMaker()
 {
-	for (auto& Elem : OrderMapBotServerDataTS)
+	for (auto& Elem : OrderMapBotServerData)
 	{
 		if(FullLobby.Num() >= 10) 
 		{
@@ -170,6 +169,8 @@ void AServerController::CreateMatch(int ServerToConnect)
 	SpawnController->OnRoundEnd.AddDynamic(this, &AServerController::EndGame);
 	SpawnController->OnEloChange.AddDynamic(this, &AServerController::ChangeElo);
 	SpawnController->OnTrueskill.AddDynamic(this, &AServerController::ChangeTrueSkill);
+	SpawnController->OnPertentileChange.AddDynamic(this, &AServerController::PercetileSkill);
+
 
 	//Adds Bot Data for Bot Stat Map to a local Map on the Spawn Controller - Then giving the data to the bot spawned
 	for(int i = 0; i < RedLobbyBot.Num(); i++)
@@ -221,13 +222,17 @@ bool AServerController::IsEmptyServers()
 
 void AServerController::OrderMap()
 {
-	/*
+	
 	OrderMapBotServerData = BotServerStatus;
-	OrderMapBotServerData.ValueSort([] (FBotSeverData a, FBotSeverData b)
+	if(FirstRun == true)
 	{
+		OrderMapBotServerData.ValueSort([] (FBotSeverData a, FBotSeverData b)
+		{
 		return a.SkillRating < b.SkillRating;
-	});
-	*/
+		});
+	}
+	
+	/*
 	OrderMapBotServerDataTS = BotServerStatusTS;
 	if(FirstRun == true)
 	{
@@ -237,6 +242,7 @@ void AServerController::OrderMap()
 		});
 		
 	}
+	*/
 	FirstRun = true;
 	
 	
@@ -279,10 +285,17 @@ void AServerController::EndGame(int ServerID , TArray<int>BotID)//Needs to pass 
 	
 }
 
+
 void AServerController::ChangeElo(int BotID, float EloChange)
 {
 	//BotServerStatus[BotID].SkillRating += EloChange;
 	UE_LOG(LogTemp, Warning, TEXT("Elo Changed Called"));
+}
+
+void AServerController::PercetileSkill(int BotID, float Change)
+{
+	BotServerStatus[BotID].SkillRating += Change;
+	UE_LOG(LogTemp, Warning, TEXT("Percentile Changed Called"));
 }
 
 void AServerController::ChangeTrueSkill(int BotID, FRating Data)

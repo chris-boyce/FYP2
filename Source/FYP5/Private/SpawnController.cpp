@@ -12,6 +12,13 @@ ASpawnController::ASpawnController()
 	TeamSize = 5;
 	BotListBlue.SetNum(TeamSize);
 	BotListRed.SetNum(TeamSize);
+	
+	BotListRedKD.SetNum(TeamSize);
+	BotListBlueKD.SetNum(TeamSize);
+
+	IncreasePercentage.SetNum(TeamSize);
+	DecreasePercentage.SetNum(TeamSize);
+	
 }
 
 void ASpawnController::BeginPlay()
@@ -26,7 +33,7 @@ void ASpawnController::Tick(float DeltaTime)
 }
 void ASpawnController::SpawnAI()
 {
-	TeamTrueskillCalc();
+
 	//Spawns Bots and Keeps them in List of Each Team
 	for ( int i = 0; i < TeamSize; i++ )
 	{
@@ -127,6 +134,7 @@ void ASpawnController::ResetRound()
 
 }
 
+
 FRating ASpawnController::TrueskillCalc(float BotMu, float BotSigma, int Outcome, float TeamMeanMu)
 {
 	K = 2.5;
@@ -196,9 +204,11 @@ void ASpawnController::EloCalc()
 
 void ASpawnController::EndGame()
 {
+	PercentageBasedSkillRating();
 	TArray<int> BotIDs;
 	for(int i = 0; i < TeamSize; i++)
 	{
+		/*
 		if(RedTeamWin == true)
 		{
 			BotListRed[i]->WinString = "Win";
@@ -220,6 +230,7 @@ void ASpawnController::EndGame()
 	}
 	for(int i = 0; i < TeamSize; i++)
 	{
+		
 		if(BlueTeamWin == true)
 		{
 			BotListBlue[i]->WinString = "Win";
@@ -237,11 +248,54 @@ void ASpawnController::EndGame()
 		BotListBlue[i]->WriteBotDataToFile(); //Write Match Report
 		OnTrueskill.Broadcast(ConnectedBlueTeamBotServerData[i].IDNum, BotsNewRating);
 		BotIDs.Add(BlueMatchBots[i].IDNum);
+		*/
 	}
 	
 	UE_LOG(LogTemp, Warning, TEXT("SpawnerCalled End Game"));
-	RestartGame();
 	OnRoundEnd.Broadcast(SpawnControllerIDNum, BotIDs);
+}
+
+void ASpawnController::PercentageBasedSkillRating()
+{
+	for(int i = 0; i < TeamSize; i++)
+	{
+		BotListBlueKD[i]  = static_cast<float>(BotListBlue[i]->Kills) / static_cast<float>(RoundNumber);
+		BotListRedKD[i]  = static_cast<float>(BotListRed[i]->Kills) / static_cast<float>(RoundNumber);
+		
+		totalKDBlue = totalKDBlue + BotListBlueKD[i];
+		totalKDRed = totalKDRed + BotListRedKD[i];
+	}
+	if(BlueTeamWin)
+	{
+		for(int i = 0; i < TeamSize; i++)
+		{
+			IncreasePercentage[i] = (BotListBlueKD[i] / totalKDBlue) * 100;
+			DecreasePercentage[i] = (BotListRedKD[i] / totalKDRed) * 100;
+			DecreasePercentage[i] = 40 - DecreasePercentage[i];
+			BotListBlue[i]->WinString = "Win";
+			BotListRed[i]->WinString = "Lose";
+			BotListBlue[i]->WriteBotDataToFile(BotListBlueKD[i]);
+			BotListRed[i]->WriteBotDataToFile(BotListRedKD[i]);
+			OnPertentileChange.Broadcast(ConnectedBlueTeamBotServerData[i].IDNum , IncreasePercentage[i]);
+			OnPertentileChange.Broadcast(ConnectedRedTeamBotServerData[i].IDNum , -DecreasePercentage[i]);
+		}
+	}
+	if(RedTeamWin)
+	{
+		for(int i = 0; i < TeamSize; i++)
+		{
+			IncreasePercentage[i] = (BotListRedKD[i] / totalKDRed) * 100;
+			DecreasePercentage[i] = (BotListBlueKD[i] / totalKDBlue) * 100;
+			DecreasePercentage[i] = 40 - DecreasePercentage[i];
+			BotListBlue[i]->WinString = "Lose";
+			BotListRed[i]->WinString = "Win";
+			BotListBlue[i]->WriteBotDataToFile(BotListBlueKD[i]);
+			BotListRed[i]->WriteBotDataToFile(BotListRedKD[i]);
+			OnPertentileChange.Broadcast(ConnectedRedTeamBotServerData[i].IDNum , IncreasePercentage[i]);
+			OnPertentileChange.Broadcast(ConnectedBlueTeamBotServerData[i].IDNum , -DecreasePercentage[i]);
+		}
+	}
+	RestartGame();
 }
 
 void ASpawnController::RestartGame()
@@ -250,12 +304,20 @@ void ASpawnController::RestartGame()
 	{
 		BotListBlue[i]->Destroy();
 		BotListBlue[i] = nullptr;
+		
+		
 	}
 	for(int i = 0; i < TeamSize; i++)
 	{
 		BotListRed[i]->Destroy();
 		BotListRed[i] = nullptr;
 	}
+	IncreasePercentage.Empty();
+	DecreasePercentage.Empty();
+	IncreasePercentage.SetNum(5);
+	DecreasePercentage.SetNum(5);
+	totalKDRed = 0;
+	totalKDBlue = 0;
 	RedTeamWin = false;
 	BlueTeamWin = false;
 	RoundNumber = 0;

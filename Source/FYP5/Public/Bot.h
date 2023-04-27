@@ -70,7 +70,7 @@ public:
 	FString SkillRating;
 
 	UFUNCTION(BlueprintImplementableEvent , Category="FileWriting")
-	void WriteBotDataToFile();
+	void WriteBotDataToFile(float KPR);
 
 	
 	

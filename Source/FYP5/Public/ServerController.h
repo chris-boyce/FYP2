@@ -137,6 +137,9 @@ public:
 	void ChangeElo(int BotID, float EloChange);
 
 	UFUNCTION(BlueprintCallable , Category="Event Reciever")
+	void PercetileSkill(int BotID, float Change);
+
+	UFUNCTION(BlueprintCallable , Category="Event Reciever")
 	void ChangeTrueSkill(int BotID, FRating Data);
 
 	

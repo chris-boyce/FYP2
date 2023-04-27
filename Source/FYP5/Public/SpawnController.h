@@ -12,6 +12,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRoundEnd, int, ServerID, TArray<int>, BotIDs);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEloChange, int, BotID, float, AmountChange);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPertentileChange, int, BotID, float, AmountChange);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTrueskillChange, int, BotID, FRating, BotData);
 
 UCLASS()
@@ -58,6 +59,25 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<ABot*> BotListBlue;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<float> BotListBlueKD;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<float> BotListRedKD;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<float> IncreasePercentage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<float> DecreasePercentage;
+
+	
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float totalKDBlue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float totalKDRed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<ABot*> BotListRed;
@@ -115,11 +135,17 @@ public:
 	UFUNCTION(BlueprintCallable , Category="Rounds")
 	void EndGame();
 
+	UFUNCTION(BlueprintCallable, Category = "PercentageSkill")
+	void PercentageBasedSkillRating();
+
 	UFUNCTION(BlueprintCallable , Category="Rounds")
 	void RestartGame();
 
 	UPROPERTY(BlueprintAssignable, Category = "EventCaller")
 	FOnRoundEnd OnRoundEnd;
+
+	UPROPERTY(BlueprintAssignable, Category = "EventCaller")
+	FOnPertentileChange OnPertentileChange;
 
 	UPROPERTY(BlueprintAssignable, Category = "EventCaller")
 	FOnEloChange OnEloChange;
