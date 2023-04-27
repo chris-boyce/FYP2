@@ -296,6 +296,11 @@ void AServerController::PercetileSkill(int BotID, float Change)
 {
 	BotServerStatus[BotID].SkillRating += Change;
 	UE_LOG(LogTemp, Warning, TEXT("Percentile Changed Called"));
+	if (BotServerStatus[BotID].SkillRating < 0.0f)
+	{
+		BotServerStatus[BotID].SkillRating = 0;
+	}
+	
 }
 
 void AServerController::ChangeTrueSkill(int BotID, FRating Data)
