@@ -108,6 +108,7 @@ public:
 	
 	//Temp Variables To Pass Data Around Inside This Script
 	FBotData LocalBotData;
+	int FirstTime;
 	TArray<AActor*> ActorSpawnController;
 	ASpawnController* SpawnController;
 	int ServerToLoad;

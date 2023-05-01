@@ -13,7 +13,7 @@ AServerController::AServerController()
 void AServerController::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	FirstTime = 0;
 	//Gets all the SpawnController and makes a Map -- Key = ServerIDNum, Data = Actor SpawnController, Bool IsActive
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnController::StaticClass(), ActorSpawnController);
 	for(int i = 0; i < ActorSpawnController.Num(); i++)
@@ -77,47 +77,6 @@ void AServerController::LobbyMaker()
 		UE_LOG(LogTemp, Warning, TEXT("Has Run Lobby!!!"));
 		SortTeams();
 	}
-
-	//Legacy Code Now :)
-	/*Goes Through BotServerData if not in game add to Lobby
-	for(int i = 0; i < BotServerStatus.Num(); i++)
-	{
-		if(BotServerStatus[i].InGame == false)
-		{
-			//Breaks out when lobby is full and goes to Sorting Teams
-			if(FullLobby.Num() >= 10) 
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Has Run Break"));
-				break;
-			}
-			//Gets the first player to lobby then uses them to find percentile TODO - This may need change when split apart more
-			if(FullLobby.Num() == 0)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Has Added first bot"));
-				FullLobby.Add(BotServerStatus[i].IDNum);
-				TotalSkillRating = (AverageSkillRating + BotServerStatus[i].SkillRating);
-				BotServerStatus[i].InGame = true;
-				AverageSkillRating = TotalSkillRating;
-				LobbyCounter = 1;
-			}
-			//Adds Bot to Lobby depending if they are close to server avarage - ATM 10%
-			else if(PercentageDifference(BotServerStatus[i].SkillRating, AverageSkillRating) < 20)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Has Added New Bot"));
-				FullLobby.Add(BotServerStatus[i].IDNum);
-				LobbyCounter = LobbyCounter + 1;
-				BotServerStatus[i].InGame = true;
-				TotalSkillRating = (TotalSkillRating + BotServerStatus[i].SkillRating);
-				AverageSkillRating = TotalSkillRating / LobbyCounter;
-			}
-		}
-	}
-	if(FullLobby.Num() >= 10) 
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Has Run Lobby"));
-		SortTeams();
-	}
-	*/
 }
 
 void AServerController::SortTeams()
@@ -164,12 +123,20 @@ void AServerController::CreateMatch(int ServerToConnect)
 	SpawnController = nullptr;
 	SpawnController = Cast<ASpawnController>(ServerStatus[ServerToConnect].SpawnController);
 	SpawnController->SpawnControllerIDNum = ServerToConnect;
+	if(FirstTime < 10)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Bound Event"));
+		SpawnController->OnPertentileChange.AddDynamic(this, &AServerController::PercetileSkill);
+		FirstTime++;
+	}
+	
+	
 	//Sets the Server to Active and binds the end to call back event for when game is over
 	ServerStatus[ServerToConnect].IsActive = true;
 	SpawnController->OnRoundEnd.AddDynamic(this, &AServerController::EndGame);
 	SpawnController->OnEloChange.AddDynamic(this, &AServerController::ChangeElo);
 	SpawnController->OnTrueskill.AddDynamic(this, &AServerController::ChangeTrueSkill);
-	SpawnController->OnPertentileChange.AddDynamic(this, &AServerController::PercetileSkill);
+	
 
 
 	//Adds Bot Data for Bot Stat Map to a local Map on the Spawn Controller - Then giving the data to the bot spawned

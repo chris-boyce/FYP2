@@ -269,6 +269,7 @@ void ASpawnController::PercentageBasedSkillRating()
 	{
 		for(int i = 0; i < TeamSize; i++)
 		{
+			
 			IncreasePercentage[i] = (BotListBlueKD[i] / totalKDBlue) * 100;
 			DecreasePercentage[i] = (BotListRedKD[i] / totalKDRed) * 100;
 			DecreasePercentage[i] = 40 - DecreasePercentage[i];
@@ -276,9 +277,16 @@ void ASpawnController::PercentageBasedSkillRating()
 			BotListRed[i]->WinString = "Lose";
 			BotListBlue[i]->WriteBotDataToFile(BotListBlueKD[i]);
 			BotListRed[i]->WriteBotDataToFile(BotListRedKD[i]);
+			
+		}
+		for(int i = 0; i < TeamSize; i++)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("BlueWinCalled"));
 			OnPertentileChange.Broadcast(ConnectedBlueTeamBotServerData[i].IDNum , IncreasePercentage[i]);
 			OnPertentileChange.Broadcast(ConnectedRedTeamBotServerData[i].IDNum , -DecreasePercentage[i]);
 		}
+		
+		
 	}
 	if(RedTeamWin)
 	{
@@ -291,10 +299,17 @@ void ASpawnController::PercentageBasedSkillRating()
 			BotListRed[i]->WinString = "Win";
 			BotListBlue[i]->WriteBotDataToFile(BotListBlueKD[i]);
 			BotListRed[i]->WriteBotDataToFile(BotListRedKD[i]);
+			
+		}
+		for(int i = 0; i < TeamSize; i++)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("RedWinCalled"));
 			OnPertentileChange.Broadcast(ConnectedRedTeamBotServerData[i].IDNum , IncreasePercentage[i]);
 			OnPertentileChange.Broadcast(ConnectedBlueTeamBotServerData[i].IDNum , -DecreasePercentage[i]);
 		}
 	}
+	
+	
 	RestartGame();
 }
 
@@ -312,10 +327,6 @@ void ASpawnController::RestartGame()
 		BotListRed[i]->Destroy();
 		BotListRed[i] = nullptr;
 	}
-	IncreasePercentage.Empty();
-	DecreasePercentage.Empty();
-	IncreasePercentage.SetNum(5);
-	DecreasePercentage.SetNum(5);
 	totalKDRed = 0;
 	totalKDBlue = 0;
 	RedTeamWin = false;
