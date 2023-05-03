@@ -126,12 +126,16 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int LevelSave;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int FirstRun;
 	
 	//BOT STUFF -- Blueprint
 	//Writes Array from Data Table
 	UFUNCTION(BlueprintImplementableEvent , Category="FileWriting")
 	void BotStatsWriteDataTableToArray();
-	
+	UFUNCTION(BlueprintImplementableEvent , Category="FileWriting")
+	void SaveBackup();
 	UFUNCTION(BlueprintImplementableEvent , Category="FileWriting")
 	void SaveBotStatsToNewFileAtEndLevel();
 	//Makes Map from the array
