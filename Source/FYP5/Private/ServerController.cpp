@@ -199,17 +199,7 @@ void AServerController::OrderMap()
 		});
 	}
 	
-	/*
-	OrderMapBotServerDataTS = BotServerStatusTS;
-	if(FirstRun == true)
-	{
-		OrderMapBotServerDataTS.ValueSort([] (FBotSeverDataTrueSkill a, FBotSeverDataTrueSkill b)
-		{
-			return a.Mu < b.Mu;
-		});
-		
-	}
-	*/
+	
 	FirstRun = true;
 	
 	
@@ -261,7 +251,8 @@ void AServerController::ChangeElo(int BotID, float EloChange)
 
 void AServerController::PercetileSkill(int BotID, float Change)
 {
-	BotServerStatus[BotID].SkillRating += Change;
+    float temp = Change * 2;
+	BotServerStatus[BotID].SkillRating += temp;
 	UE_LOG(LogTemp, Warning, TEXT("Percentile Changed Called"));
 	if (BotServerStatus[BotID].SkillRating < 0.0f)
 	{

@@ -202,6 +202,7 @@ void ASpawnController::EloCalc()
 }
 */
 
+
 void ASpawnController::EndGame()
 {
 	PercentageBasedSkillRating();
