@@ -162,6 +162,7 @@ FRating ASpawnController::TrueskillCalc(float BotMu, float BotSigma, int Outcome
 
 void ASpawnController::TeamTrueskillCalc()
 {
+	/*
 	for(int i = 0; i < TeamSize; i++)
 	{
 		BlueTeamRating.TeamMu = BlueTeamRating.TeamMu + ConnectedBlueTeamBotServerData[i].Mu;
@@ -173,7 +174,7 @@ void ASpawnController::TeamTrueskillCalc()
 		RedTeamRating.TeamMu = RedTeamRating.TeamMu + ConnectedRedTeamBotServerData[i].Mu;
 	}
 	RedTeamRating.TeamMu = RedTeamRating.TeamMu / TeamSize ;
-	
+	*/
 }
 
 

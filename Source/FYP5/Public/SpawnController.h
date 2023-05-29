@@ -121,10 +121,10 @@ public:
 	float outputB;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TMap<int, FBotSeverDataTrueSkill> ConnectedRedTeamBotServerData;
+	TMap<int, FBotSeverData> ConnectedRedTeamBotServerData;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TMap<int, FBotSeverDataTrueSkill> ConnectedBlueTeamBotServerData;
+	TMap<int, FBotSeverData> ConnectedBlueTeamBotServerData;
 
 	// Define the structure of a team's rating
 	

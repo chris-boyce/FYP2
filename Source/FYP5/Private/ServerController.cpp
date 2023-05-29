@@ -30,8 +30,8 @@ void AServerController::BeginPlay()
 	ServerWriteArrayToMap();
 	
 	//SaveBotStatsToNewFileAtEndLevel();
-	ServerWriteDataTableToArrayTS();
-	ServerWriteArrayToMapTS();
+	//ServerWriteDataTableToArrayTS();
+	//ServerWriteArrayToMapTS();
 	OrderMap();
 	//Matchmaking start Chain - LobbyMaker -> LobbySorting -> Server Finding -> CreateMatch
 	LobbyMaker();
@@ -98,12 +98,12 @@ void AServerController::SortTeams()
 	for(int i = 0; i < 5; i++)
 	{
 		RedLobbyBot.Add(FullLobby[i]);
-		AverageRedElo += BotServerStatusTS[FullLobby[i]].Mu;
+		//AverageRedElo += BotServerStatusTS[FullLobby[i]].Mu;
 	}
 	for(int i = 0; i < 5; i++)
 	{
 		BlueLobbyBot.Add(FullLobby[i + 5 ]);
-		AverageBlueElo += BotServerStatusTS[FullLobby[i + 5]].Mu;
+		//AverageBlueElo += BotServerStatusTS[FullLobby[i + 5]].Mu;
 	}
 	ServerSelector();
 }
@@ -144,13 +144,13 @@ void AServerController::CreateMatch(int ServerToConnect)
 	{
 		LocalBotData = BotStatsMap[RedLobbyBot[i]];
 		SpawnController->RedMatchBots.Add(i, LocalBotData );
-		SpawnController->ConnectedRedTeamBotServerData.Add(i, BotServerStatusTS[RedLobbyBot[i]]);
+		SpawnController->ConnectedRedTeamBotServerData.Add(i, BotServerStatus[RedLobbyBot[i]]);
 	}
 	for(int i = 0; i < BlueLobbyBot.Num(); i++)
 	{
 		LocalBotData = BotStatsMap[BlueLobbyBot[i]];
 		SpawnController->BlueMatchBots.Add(i, LocalBotData );
-		SpawnController->ConnectedBlueTeamBotServerData.Add(i, BotServerStatusTS[BlueLobbyBot[i]]);
+		SpawnController->ConnectedBlueTeamBotServerData.Add(i, BotServerStatus[BlueLobbyBot[i]]);
 	}
 	SpawnController->AverageBlueElo = AverageBlueElo / 5;
 	SpawnController->AverageRedElo = AverageRedElo / 5;
@@ -210,8 +210,8 @@ void AServerController::EndGame(int ServerID , TArray<int>BotID)//Needs to pass 
 	ServerStatus[ServerID].IsActive = false;
 	for (int i = 0; i < BotID.Num(); i++)
 	{
-		BotServerStatusTS[BotID[i]].InGame = false;
-		BotServerStatusTS[BotID[i]].GamesPlayed += 1;
+		BotServerStatus[BotID[i]].InGame = false;
+		BotServerStatus[BotID[i]].GamesPlayed += 1;
 	}
 	RefreshArray();
 	int count = 0;
